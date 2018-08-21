@@ -1,4 +1,4 @@
-export const satages = {
+export const stages = {
         init: {title: 'Инициация'},
         home: {title: 'В пиццерии'},
         orders: {title: 'Набор заказов'},

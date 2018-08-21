@@ -28,7 +28,7 @@ export const heroManager = {
                 points: 5,
                 stageId: 'init',
                 sourceId: 'pizzeria',
-                targetId: null,
+                targetId: 'default',
                 roadId: null,
                 eventIndex: null,
                 allowedChoiceIndexes: null,

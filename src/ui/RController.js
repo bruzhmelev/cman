@@ -6,7 +6,7 @@ import { events } from '../content/entities/events'
 import { heroManager } from '../logic/HeroManager'
 import { taskManager } from '../logic/TaskManager'
 
-export class Controller {
+export class RController {
 
     run() {
         this.model = {
@@ -17,26 +17,16 @@ export class Controller {
             hero: heroManager.createHero()
         };
 
-        return this.model;
-    }
-
-    render() {
-        this.template =  new window.jsview.Template({
-            element: '#host',
-            model: this.model,
-            controller: this
-        });
-
-        this.template.render();
+        return {...this.model};
     }
 
     allocatePoint(stat){
+        
         var pointsToStats = {};
         pointsToStats[stat] = 1;
-
         heroManager.allocatePoints(this.model.hero, pointsToStats);
+
         this._updateModel();
-        this.template.render();
     }
 
     rest(){
