@@ -1,0 +1,22 @@
+# Выключен tslint
+
+```
+{
+  "rules":{
+  }
+}
+```
+
+Вместо
+```
+{
+  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "linterOptions": {
+    "exclude": [
+      "config/**/*.js",
+      "node_modules/**/*.ts",
+      "coverage/lcov-report/*.js"
+    ]
+  }
+}
+```
