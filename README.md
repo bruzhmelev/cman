@@ -1,3 +1,8 @@
+# Запуск
+
+`npm i`
+`npm start`
+
 # Известные проблемы
 
 ## Object.keys(hero.stats).map возвращает лишний ключ
