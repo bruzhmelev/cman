@@ -8,23 +8,92 @@ import { stages } from './content/entities/stages';
 
 
 class App extends React.Component {
-  
+
+    private jsviewController: Controller;
+    private reactController: RController;
+
+    private model: any;
+
+  public componentWillMount () {
+    this.jsviewController = new Controller();
+    this.jsviewController.run();
+    this.jsviewController.render();
+
+    this.reactController = new RController();
+    this.model = this.reactController.run();
+  }
+
+  private allocatePointHandler = (statName: string) => () => {
+    this.reactController.allocatePoint(statName); 
+    this.setState({});
+  }
+
+  private restHandler = () => () => {
+    this.reactController.rest();
+    this.setState({});
+  }
+
+  private startOrderHandler = () => () => {
+    this.reactController.startOrders();
+    this.setState({});
+  }
+
+  private finishOrderHandler = () => () => {
+    this.reactController.finishOrders();
+    this.setState({});
+  }
+
+  private addOrderHandler = (orderIndex: number) => () => {
+    this.reactController.addOrder(orderIndex);
+    this.setState({});
+  }
+
+  private goHomeHandler = () => () => {
+    this.reactController.goHome();
+    this.setState({});
+  }
+
+  private startTripHandler = (roadId: string) => () => {
+    this.reactController.startTrip(roadId);
+    this.setState({});
+  }
+
+  private renderMap = (roads: any, locations: any) => {
+      return (
+        <div className="panel2">
+            <table>
+                {roads && Object.keys(roads).map((roadName: any) => {
+                    let road = roads[roadName];
+                    return (
+                        <tr>
+                            <td><span>{locations[road.sourceId].title}</span></td>
+                            <td><span></span>{locations[road.targetId].title}</td>
+                            <td className="rigth"><span>{road.duration}</span> мин.</td>
+                        </tr>
+                    );
+                })}
+            </table>
+        </div>
+      );
+  }
 
   public render() {
-    const jsviewController = new Controller();
-    jsviewController.run();
-    jsviewController.render();
-
-    const reactController = new RController();
-    let {
-      stats, 
-      roads, 
-      locations, 
-      events, 
-      hero
-    } = reactController.run();
-
     console.log('App', 'render')
+    this.model = this.reactController.model;
+
+    let {
+        stats, 
+        roads, 
+        locations, 
+        events, 
+        hero,
+        orders,
+        routes
+    } = this.model;
+
+    console.log(JSON.stringify({orders, hero}))
+
+    const stageName = stages[hero.stageId] && stages[hero.stageId].title;
 
     return (
       <div className="host2 wide2">
@@ -54,86 +123,73 @@ class App extends React.Component {
         </div>
         <hr />
         <div id="init" className={hero.stageId=='init'?'visible':'hidden'}>
-            <div className="title">{stages[hero.stageId].title}</div>
+            <div className="title">{stageName}</div>
             <div>Распрелите очки между характеристиками. Осталось: <span>{hero.points}</span></div>
             <table>
               {Object.keys(hero.stats).map((statName) => {
                 const statValue = hero.stats[statName];
                 return (
-                  <tr>
+                  <tr key={statName}>
                       <td>{stats[statName].title}</td>
                       <td className="rigth">{statValue}</td>
-                      <td><span className="button" onClick={() => {reactController.allocatePoint(statName); this.setState({})}}>+</span></td>
+                      <td><span className="button" onClick={this.allocatePointHandler(statName)}>+</span></td>
                   </tr>
                 );
               })}
-                <tr data-each="statValue,statName in hero.stats">
-                    <td><span data-text="{stats[statName].title}"></span></td>
-                    <td className="rigth"><span data-text="{statValue}"></span></td>
-                    <td><span className="button" data-on-click="allocatePoint(statName)">+</span></td>
-                </tr>
             </table>
         </div>
-        <div id="home" data-at-class="{hero.stageId=='home'?'visible':'hidden'}">
-            <div className="title" data-text="{stages[hero.stageId].title}"></div>
-            <div data-at-class="button {hero.points?'visible':'hidden'}" data-on-click="rest()">Отдохнуть</div>
-            <div className="button" data-on-click="startOrders()">Взять заказы</div>
+        <div id="home" className={hero.stageId=='home'?'visible':'hidden'}>
+            <div className="title">{stageName}</div>
+            <div className={hero.points?'button visible':'button hidden'} onClick={this.restHandler()}>Отдохнуть</div>
+            <div className="button" onClick={this.startOrderHandler()}>Взять заказы</div>
         </div>
-        <div id="orders" data-at-class="{hero.stageId=='orders'?'visible':'hidden'}">
+        <div id="orders" className={hero.stageId=='orders'?'visible':'hidden'}>
             <div className="panel1">
-                <div className="title" data-text="{stages[hero.stageId].title}"></div>
-                <table data-at-class="{orders?'visible':'hidden'}">
-                    <tr data-each="order,orderIndex in orders">
-                        <td><span data-text="{order.text}"></span></td>
-                        <td><span data-text="{locations[order.targetId].title}"></span></td>
-                        <td className="rigth"><span data-text="{order.price}"></span> руб.</td>
-                        <td><span className="button" data-on-click="addOrder(orderIndex)">Выбрать</span></td>
-                    </tr>
+                <div className="title">{stageName}</div>
+                <table className={orders?'visible':'hidden'}>
+                    {orders ? orders.map((order: any, orderIndex: number) => {
+                        return (
+                            <tr key={orderIndex}>
+                                <td><span>{order.text}</span></td>
+                                <td><span>{locations[order.targetId].title}</span></td>
+                                <td className="rigth"><span>{order.price}</span> руб.</td>
+                                <td><span className="button" onClick={this.addOrderHandler(orderIndex)}>Выбрать</span></td>
+                            </tr>
+                        );
+                    }):null}
                 </table>
-                <div className="button" data-on-click="finishOrders()">Готово</div>
+                <div className="button" onClick={this.finishOrderHandler()}>Готово</div>
             </div>
-            <div className="panel2">
-                <table>
-                    <tr data-each="road in roads">
-                        <td><span data-text="{locations[road.sourceId].title}"></span></td>
-                        <td><span data-text="{locations[road.targetId].title}"></span></td>
-                        <td className="rigth"><span data-text="{road.duration}"></span> мин.</td>
-                    </tr>
-                </table>
-            </div>
+            {this.renderMap(roads, locations)}
         </div>
-        <div id="map" data-at-class="{hero.stageId=='map'?'visible':'hidden'}">
+        <div id="map" className={hero.stageId=='map'?'visible':'hidden'}>
             <div className="panel1">
-                <div className="title" data-text="{stages[hero.stageId].title}"></div>
-                <div className="button" data-on-click="goHome()">Домой</div>
-                <table data-at-class="{routes.length?'visible':'hidden'}">
-                    <tr data-each="route in routes">
-                        <td><span data-text="{locations[route.sourceId].title}"></span></td>
-                        <td><span data-text="{locations[route.targetId].title}"></span></td>
-                        <td className="rigth"><span data-text="{route.duration}"></span> мин.</td>
-                        <td><span data-at-class="button" data-on-click="startTrip(route.roadId)">Выбрать</span></td>
-                    </tr>
+                <div className="title">{stageName}</div>
+                <div className="button" onClick={this.goHomeHandler()}>Домой</div>
+                <table className={routes && routes.length?'visible':'hidden'}>
+                    {routes && routes.map((route: any, routeIndex: number ) => {
+                        return (
+                            <tr key={route.roadId}>
+                                <td><span>{locations[route.sourceId].title}</span></td>
+                                <td><span>{locations[route.targetId].title}</span></td>
+                                <td className="rigth"><span>{route.duration}</span> мин.</td>
+                                <td><span className="button" onClick={this.startTripHandler(route.roadId)} data-on-click="startTrip(route.roadId)">Выбрать</span></td>
+                            </tr>
+                        );
+                    })}
                 </table>
             </div>
-            <div className="panel2">
-                <table>
-                    <tr data-each="road in roads">
-                        <td><span data-text="{locations[road.sourceId].title}"></span></td>
-                        <td><span data-text="{locations[road.targetId].title}"></span></td>
-                        <td className="rigth"><span data-text="{road.duration}"></span> мин.</td>
-                    </tr>
-                </table>
-            </div>
+            {this.renderMap(roads, locations)}
         </div>
-        <div id="event" data-at-class="{hero.eventIndex==null?'hidden':'visible'}" data-using="event:events[hero.eventIndex]">
-            <div className="title" data-text="{stages[hero.stageId].title}"></div>
+        <div id="event" className={hero.eventIndex==null?'hidden':'visible'} data-using="event:events[hero.eventIndex]">
+            <div className="title" data-text="{stageName}"></div>
             <div data-text="{event.text}"></div>
             <div data-each="choice,choiceIndex in event.choices">
-                <div data-at-class="button {hero.choiceIndex==choiceIndex?'selected':''}" data-text="{choice.text}" data-on-click="makeChoice(choiceIndex)"></div>
+                <div className="button {hero.choiceIndex==choiceIndex?'selected':''}" data-text="{choice.text}" data-on-click="makeChoice(choiceIndex)"></div>
             </div>
             <hr />
         </div>
-        <div id="outcome" data-at-class="{hero.outcomeIndex==null?'hidden':'visible'}" data-using="event:events[hero.eventIndex];choice:event.choices[hero.choiceIndex];outcome:choice.outcomes[hero.outcomeIndex]">
+        <div id="outcome" className={hero.outcomeIndex==null?'hidden':'visible'} data-using="event:events[hero.eventIndex];choice:event.choices[hero.choiceIndex];outcome:choice.outcomes[hero.outcomeIndex]">
             <div data-text="{outcome.text}"></div>
             <div className="button" data-on-click="nextEvent()">Дальше</div>
         </div>

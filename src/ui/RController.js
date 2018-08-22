@@ -21,7 +21,6 @@ export class RController {
     }
 
     allocatePoint(stat){
-        
         var pointsToStats = {};
         pointsToStats[stat] = 1;
         heroManager.allocatePoints(this.model.hero, pointsToStats);
@@ -32,49 +31,49 @@ export class RController {
     rest(){
         heroManager.nextEvent(this.model.hero);
         this._updateModel();
-        this.template.render();
+        // this.template.render();
     }
 
     startOrders(){
         heroManager.startOrders(this.model.hero);
         this._updateModel();
-        this.template.render();
+        // this.template.render();
     }
 
     addOrder(orderIndex){
         heroManager.addOrder(this.model.hero, orderIndex);
         this._updateModel();
-        this.template.render();
+        // this.template.render();
     }
 
     finishOrders(){
         heroManager.finishOrders(this.model.hero);
         this._updateModel();
-        this.template.render();
+        // this.template.render();
     }
 
     startTrip(roadId){
         heroManager.startTrip(this.model.hero, roadId);
         this._updateModel();
-        this.template.render();
+        // this.template.render();
     }
 
     goHome(){
         heroManager.goHome(this.model.hero);
         this._updateModel();
-        this.template.render();
+        // this.template.render();
     }
 
     makeChoice(choiceIndex){
         heroManager.makeChoice(this.model.hero, choiceIndex);
         this._updateModel();
-        this.template.render();
+        // this.template.render();
     }
 
     nextEvent(){
         heroManager.nextEvent(this.model.hero);
         this._updateModel();
-        this.template.render();
+        // this.template.render();
     }
 
     _updateModel(){
@@ -83,6 +82,7 @@ export class RController {
         }
 
         if (this.model.hero.stageId == 'orders'){
+            console.log("rounds[this.model.hero.round - 1].orders", JSON.stringify(rounds[this.model.hero.round - 1].orders))
             this.model.orders = rounds[this.model.hero.round - 1].orders;
         }
     }

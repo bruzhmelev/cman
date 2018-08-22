@@ -4,5 +4,6 @@ export const stages = {
         orders: {title: 'Набор заказов'},
         road: {title: 'В дороге'},
         location: {title: 'В локации'},
-        client: {title: 'У клиента'}
+        client: {title: 'У клиента'},
+        map: {title: 'Карта'}
     };
