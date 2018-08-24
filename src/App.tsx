@@ -58,6 +58,16 @@ class App extends React.Component {
     this.setState({});
   }
 
+  private makeChoiceHandler = (choiceIndex: number) => () => {
+    this.reactController.makeChoice(choiceIndex);
+    this.setState({});
+  }
+
+  private nextEventHandler = () => () => {
+    this.reactController.nextEvent();
+    this.setState({});
+  }
+
   private renderMap = (roads: any, locations: any) => {
       return (
         <div className="panel2">
@@ -75,6 +85,44 @@ class App extends React.Component {
             </table>
         </div>
       );
+  }
+
+  private renderEvent = (events: any, hero: any, stageName: string) => {
+    var event = events[hero.eventIndex];
+    if(!event){
+        return null;
+    }
+
+    return (
+        <div id="event" className={hero.eventIndex==null?'hidden':'visible'}>
+            <div className="title">{stageName}</div>
+            <div>{event.text}</div>
+            {event.choices.map((choice: any, choiceIndex: number) => {
+                return (
+                    <div>
+                        <div className={(hero.choiceIndex==choiceIndex)?'button selected':'button'} onClick={this.makeChoiceHandler(choiceIndex)}>{choice.text}</div>
+                    </div>
+                );
+            })}
+            <hr />
+        </div>
+    );
+  }
+
+  private renderOutcome = (events: any, hero: any) => {
+    var event = events[hero.eventIndex];
+    if(!event){
+        return null;
+    }
+    var choice = event.choices[hero.choiceIndex];
+    var outcome = choice && choice.outcomes[hero.outcomeIndex];
+
+    return (
+        <div id="outcome" className={hero.outcomeIndex==null?'hidden':'visible'}>
+            <div>{outcome && outcome.text}</div>
+            <div className="button" onClick={this.nextEventHandler()}>Дальше</div>
+        </div>
+    );
   }
 
   public render() {
@@ -181,18 +229,8 @@ class App extends React.Component {
             </div>
             {this.renderMap(roads, locations)}
         </div>
-        <div id="event" className={hero.eventIndex==null?'hidden':'visible'} data-using="event:events[hero.eventIndex]">
-            <div className="title" data-text="{stageName}"></div>
-            <div data-text="{event.text}"></div>
-            <div data-each="choice,choiceIndex in event.choices">
-                <div className="button {hero.choiceIndex==choiceIndex?'selected':''}" data-text="{choice.text}" data-on-click="makeChoice(choiceIndex)"></div>
-            </div>
-            <hr />
-        </div>
-        <div id="outcome" className={hero.outcomeIndex==null?'hidden':'visible'} data-using="event:events[hero.eventIndex];choice:event.choices[hero.choiceIndex];outcome:choice.outcomes[hero.outcomeIndex]">
-            <div data-text="{outcome.text}"></div>
-            <div className="button" data-on-click="nextEvent()">Дальше</div>
-        </div>
+        {this.renderEvent(events, hero, stageName)}
+        {this.renderOutcome(events, hero)}
       </div>
     );
   }
