@@ -16,6 +16,7 @@
 ```
 
 Вместо
+
 ```
 {
   "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
@@ -29,15 +30,16 @@
 }
 ```
 
-## В Controller 
+## В Controller
 
-Вместо 
+Вместо
+
 ```
         this._updateModel();
         this.template.render();
 ```
-для реакта делать setState({...model});
 
+для реакта делать setState({...model});
 
 ## Вынести инициализацию контроллеров из render
 
