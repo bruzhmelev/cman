@@ -9,16 +9,10 @@ import { stages } from './content/entities/stages';
 
 class App extends React.Component {
 
-    private jsviewController: Controller;
     private reactController: RController;
-
     private model: any;
 
   public componentWillMount () {
-    this.jsviewController = new Controller();
-    this.jsviewController.run();
-    this.jsviewController.render();
-
     this.reactController = new RController();
     this.model = this.reactController.run();
   }
@@ -145,7 +139,7 @@ class App extends React.Component {
 
     return (
       <div className="host2 wide2">
-        <img src={logo} className="App-logo" alt="logo" />
+        {/* <img src={logo} className="App-logo" alt="logo" /> */}
         <div>
             Время: <span className={hero.late?'attention':''}>{hero.time}</span> |
             Деньги: {hero.score} |
